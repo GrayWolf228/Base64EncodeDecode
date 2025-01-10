@@ -1,14 +1,19 @@
 #ifndef BASE64APP_H
 #define BASE64APP_H
 
-#include <QWidget>
-#include <QLineEdit>
+#include <QMainWindow>
 
-class Base64App : public QWidget {
+QT_BEGIN_NAMESPACE
+namespace Ui { class Base64App; }
+QT_END_NAMESPACE
+
+class Base64App : public QMainWindow
+{
     Q_OBJECT
 
 public:
-    Base64App();
+    Base64App(QWidget *parent = nullptr);
+    ~Base64App();
 
 private slots:
     void encodeText();
@@ -16,8 +21,7 @@ private slots:
     void copyToClipboard();
 
 private:
-    QLineEdit *inputField;
-    QLineEdit *outputField;
+    Ui::Base64App *ui;
 };
 
 #endif // BASE64APP_H

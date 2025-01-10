@@ -9,16 +9,14 @@
 #include <string>
 
 #include "base64app.h"
+#include "ui_base64app.h"
 
-#include <string>
-#include <vector>
-
+// Base64 encoding and decoding functions
 static const std::string BASE64_CHARS =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    "abcdefghijklmnopqrstuvwxyz"
-    "0123456789+/";
+"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+"abcdefghijklmnopqrstuvwxyz"
+"0123456789+/";
 
-// Функция для кодирования base64
 std::string base64_encode(const std::string &input) {
     std::string encoded;
     int val = 0, valb = -6;
@@ -39,7 +37,6 @@ std::string base64_encode(const std::string &input) {
     return encoded;
 }
 
-// Функция для декодирования base64
 std::string base64_decode(const std::string &input) {
     std::vector<int> decoding_table(256, -1);
     for (int i = 0; i < 64; i++) {
@@ -60,52 +57,35 @@ std::string base64_decode(const std::string &input) {
     return decoded;
 }
 
-// Основной виджет приложения
-Base64App::Base64App() {
-    QVBoxLayout *layout = new QVBoxLayout(this);
+Base64App::Base64App(QWidget *parent)
+: QMainWindow(parent), ui(new Ui::Base64App)
+{
+    ui->setupUi(this);
 
-    QLabel *labelInput = new QLabel("Введите текст для кодирования или декодирования:", this);
-    layout->addWidget(labelInput);
+    connect(ui->encodeButton, &QPushButton::clicked, this, &Base64App::encodeText);
+    connect(ui->decodeButton, &QPushButton::clicked, this, &Base64App::decodeText);
+    connect(ui->copyButton, &QPushButton::clicked, this, &Base64App::copyToClipboard);
+}
 
-    inputField = new QLineEdit(this);
-    layout->addWidget(inputField);
-
-    QLabel *labelOutput = new QLabel("Результат:", this);
-    layout->addWidget(labelOutput);
-
-    outputField = new QLineEdit(this);
-    outputField->setReadOnly(true);
-    layout->addWidget(outputField);
-
-    QPushButton *encodeButton = new QPushButton("Закодировать", this);
-    layout->addWidget(encodeButton);
-
-    QPushButton *decodeButton = new QPushButton("Декодировать", this);
-    layout->addWidget(decodeButton);
-
-    QPushButton *copyButton = new QPushButton("Скопировать результат", this);
-    layout->addWidget(copyButton);
-
-    connect(encodeButton, &QPushButton::clicked, this, &Base64App::encodeText);
-    connect(decodeButton, &QPushButton::clicked, this, &Base64App::decodeText);
-    connect(copyButton, &QPushButton::clicked, this, &Base64App::copyToClipboard);
+Base64App::~Base64App() {
+    delete ui;
 }
 
 void Base64App::encodeText() {
-    std::string inputText = inputField->text().toStdString();
+    std::string inputText = ui->inputField->text().toStdString();
     std::string encodedText = base64_encode(inputText);
-    outputField->setText(QString::fromStdString(encodedText));
+    ui->outputField->setText(QString::fromStdString(encodedText));
 }
 
 void Base64App::decodeText() {
-    std::string inputText = inputField->text().toStdString();
+    std::string inputText = ui->inputField->text().toStdString();
     std::string decodedText = base64_decode(inputText);
-    outputField->setText(QString::fromStdString(decodedText));
+    ui->outputField->setText(QString::fromStdString(decodedText));
 }
 
 void Base64App::copyToClipboard() {
     QClipboard *clipboard = QApplication::clipboard();
-    clipboard->setText(outputField->text());
+    clipboard->setText(ui->outputField->text());
 }
 
 int main(int argc, char *argv[]) {
