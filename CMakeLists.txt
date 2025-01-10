@@ -5,7 +5,6 @@ project(Base64EncodeDecode)
 set(CMAKE_CXX_STANDARD 17)
 
 find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets)
-find_package(OpenSSL REQUIRED)
 
 set(SOURCES
     base64.cxx
@@ -13,8 +12,7 @@ set(SOURCES
 
 add_executable(base64 ${SOURCES})
 
-target_link_libraries(base64 Qt5::Core Qt5::Gui Qt5::Widgets OpenSSL::SSL OpenSSL::Crypto)
-
+target_link_libraries(base64 Qt5::Core Qt5::Gui Qt5::Widgets)
 qt5_wrap_cpp(MOC_SOURCES base64app.h)
 
 target_sources(base64 PRIVATE ${MOC_SOURCES})
