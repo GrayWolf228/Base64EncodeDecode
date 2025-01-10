@@ -7,44 +7,57 @@
 #include <QClipboard>
 #include <QString>
 #include <string>
-#include <openssl/bio.h>
-#include <openssl/evp.h>
-#include <openssl/buffer.h>
 
 #include "base64app.h"
 
+#include <string>
+#include <vector>
+
+static const std::string BASE64_CHARS =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    "abcdefghijklmnopqrstuvwxyz"
+    "0123456789+/";
+
 // Функция для кодирования base64
-std::string base64_encode(const std::string &data) {
-    BIO *bio, *b64;
-    BUF_MEM *buffer;
-
-    b64 = BIO_new(BIO_f_base64());
-    bio = BIO_new(BIO_s_mem());
-    bio = BIO_push(b64, bio);
-
-    BIO_write(bio, data.c_str(), data.length());
-    BIO_flush(bio);
-    BIO_get_mem_ptr(bio, &buffer);
-
-    std::string encoded(buffer->data, buffer->length);
-    BIO_free_all(bio);
-
+std::string base64_encode(const std::string &input) {
+    std::string encoded;
+    int val = 0, valb = -6;
+    for (unsigned char c : input) {
+        val = (val << 8) + c;
+        valb += 8;
+        while (valb >= 0) {
+            encoded.push_back(BASE64_CHARS[(val >> valb) & 0x3F]);
+            valb -= 6;
+        }
+    }
+    if (valb > -6) {
+        encoded.push_back(BASE64_CHARS[((val << 8) >> (valb + 8)) & 0x3F]);
+    }
+    while (encoded.size() % 4) {
+        encoded.push_back('=');
+    }
     return encoded;
 }
 
 // Функция для декодирования base64
-std::string base64_decode(const std::string &encoded) {
-    BIO *bio, *b64;
-    char buffer[1024] = {0};
+std::string base64_decode(const std::string &input) {
+    std::vector<int> decoding_table(256, -1);
+    for (int i = 0; i < 64; i++) {
+        decoding_table[BASE64_CHARS[i]] = i;
+    }
 
-    b64 = BIO_new(BIO_f_base64());
-    bio = BIO_new_mem_buf(encoded.c_str(), -1);
-    bio = BIO_push(b64, bio);
-
-    int decoded_length = BIO_read(bio, buffer, encoded.length());
-    BIO_free_all(bio);
-
-    return std::string(buffer, decoded_length);
+    std::string decoded;
+    int val = 0, valb = -8;
+    for (unsigned char c : input) {
+        if (decoding_table[c] == -1) break;
+        val = (val << 6) + decoding_table[c];
+        valb += 6;
+        if (valb >= 0) {
+            decoded.push_back(char((val >> valb) & 0xFF));
+            valb -= 8;
+        }
+    }
+    return decoded;
 }
 
 // Основной виджет приложения
