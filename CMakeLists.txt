@@ -1,18 +1,21 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.14)
+project(Base64App)
 
-project(Base64EncodeDecode)
+# Настройка Qt
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
 
-set(CMAKE_CXX_STANDARD 17)
+# Включение автоматической обработки MOC, UIC и RCC
+set(CMAKE_AUTOMOC ON)  # Включает автоматическую генерацию .moc файлов
+set(CMAKE_AUTORCC ON)  # Включает автоматическую обработку .qrc файлов
 
-find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets)
-
+# Добавление исходных файлов
 set(SOURCES
     base64.cxx
+    base64app.h  # Заголовочный файл, который может содержать Q_OBJECT
 )
 
-add_executable(base64 ${SOURCES})
+# Создание исполняемого файла
+add_executable(Base64App ${SOURCES})
 
-target_link_libraries(base64 Qt5::Core Qt5::Gui Qt5::Widgets)
-qt5_wrap_cpp(MOC_SOURCES base64app.h)
-
-target_sources(base64 PRIVATE ${MOC_SOURCES})
+# Подключение Qt-модулей
+target_link_libraries(Base64App PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets)git
