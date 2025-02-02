@@ -18,4 +18,4 @@ set(SOURCES
 add_executable(Base64App ${SOURCES})
 
 # Подключение Qt-модулей
-target_link_libraries(Base64App PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets)git
+target_link_libraries(Base64App PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets)
